@@ -5,7 +5,8 @@ CONFIG += c++11
 LIBS += -lqhttpserver
 
 SOURCES += main.cpp \
-    webapicontroller.cpp
+    webapicontroller.cpp \
+    systemcontroller.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,4 +33,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    webapicontroller.h
+    webapicontroller.h \
+    systemcontroller.h
