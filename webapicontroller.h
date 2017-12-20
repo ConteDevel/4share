@@ -2,6 +2,7 @@
 #define WEBAPICONTROLLER_H
 
 #include <QObject>
+#include <QJsonDocument>
 
 #include "qhttpserverfwd.h"
 
@@ -21,6 +22,7 @@ signals:
 
 private slots:
     void handleRequest(QHttpRequest *req, QHttpResponse *resp);
+    void send200Response(QHttpResponse *resp, QJsonDocument json_doc);
     void send200Response(QHttpResponse *resp, QString msg);
     void send403Response(QHttpResponse *resp, QString msg);
 

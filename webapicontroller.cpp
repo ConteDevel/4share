@@ -75,13 +75,12 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
         for (int i = 0; i < filesList.size(); ++i)
         {
             QJsonObject json_obj;
-            json_obj["file"] = filesList[i];
+            json_obj["fileName"] = filesList[i];
             json_array.append(json_obj);
         }
         QJsonDocument json_doc;
         json_doc.setArray(json_array);
-        QString json_string = json_doc.toJson();
-        send200Response(resp, json_string);
+        send200Response(resp, json_doc);
     }
     else
     {
@@ -90,12 +89,28 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
     }
 }
 
+void WebApiController::send200Response(QHttpResponse *resp, QJsonDocument json_doc)
+{
+    resp->setHeader("Content-Type", "application/json");
+    resp->writeHead(200); // 200 OK
+
+    QString json_string = json_doc.toJson();
+
+    resp->end(json_string.toUtf8());
+}
+
 void WebApiController::send200Response(QHttpResponse *resp, QString msg)
 {
-    resp->setHeader("Content-Type", "text/html");
+    resp->setHeader("Content-Type", "application/json");
     resp->writeHead(200); // 200 OK
-    QString body = tr("%1");
-    resp->end(body.arg(msg).toUtf8());
+
+    QJsonDocument json_doc;
+    QJsonObject json_obj;
+    json_obj["result"] = msg;
+    json_doc.setObject(json_obj);
+    QString json_string = json_doc.toJson();
+
+    resp->end(json_string.toUtf8());
 }
 
 void WebApiController::send403Response(QHttpResponse *resp, QString msg)
