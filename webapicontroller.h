@@ -12,9 +12,12 @@ public:
     WebApiController();
 
 signals:
+    // control system signals
     void volumeSetValue(int newValue);
     void volumeTurnValue(bool isTurnUp, int value);
     void volumeSetIsMute(bool isMute);
+    // file system signals
+    void fsGetList(QStringList &list);
 
 private slots:
     void handleRequest(QHttpRequest *req, QHttpResponse *resp);

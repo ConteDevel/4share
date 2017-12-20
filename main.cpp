@@ -3,6 +3,7 @@
 
 #include "webapicontroller.h"
 #include "systemcontroller.h"
+#include "filesystemcontroller.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,16 +15,22 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
+    QString defRoot = "/home/anastasia/tp/cpp/mydir";
+
     WebApiController webApiController;
     SystemController systemController;
+    FileSystemController fileSystemController(defRoot);
 
-    // Connect web api signals to system slots
+    // connecting web api signals to control system slots
     QObject::connect(&webApiController, &WebApiController::volumeSetValue,
                          &systemController, &SystemController::setVolumeValue);
     QObject::connect(&webApiController, &WebApiController::volumeTurnValue,
                          &systemController, &SystemController::turnVolumeValue);
     QObject::connect(&webApiController, &WebApiController::volumeSetIsMute,
                          &systemController, &SystemController::setVolumeIsMute);
+    // connectiong web api signals to file system slots
+    QObject::connect(&webApiController, &WebApiController::fsGetList,
+                        &fileSystemController, &FileSystemController::getFilesList);
 
     return app.exec();
 }

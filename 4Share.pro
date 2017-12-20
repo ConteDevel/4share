@@ -6,7 +6,13 @@ LIBS += -lqhttpserver
 
 SOURCES += main.cpp \
     webapicontroller.cpp \
-    systemcontroller.cpp
+    systemcontroller.cpp \
+    filesystemcontroller.cpp
+
+HEADERS += \
+    webapicontroller.h \
+    systemcontroller.h \
+    filesystemcontroller.h
 
 RESOURCES += qml.qrc
 
@@ -31,7 +37,3 @@ DEFINES += QT_DEPRECATED_WARNINGS
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-HEADERS += \
-    webapicontroller.h \
-    systemcontroller.h

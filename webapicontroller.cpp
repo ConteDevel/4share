@@ -2,6 +2,10 @@
 
 #include <QDebug>
 
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+
 #include <qhttpserver.h>
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
@@ -19,11 +23,14 @@ WebApiController::WebApiController()
 
 void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
 {
+    // system volume expressions
     QRegExp expVolumeSet("^/system/volume/set/([0-9]+)$");
     QRegExp expVolumeTurnUp("^/system/volume/up/([0-9]+)$");
     QRegExp expVolumeTurnDown("^/system/volume/down/([0-9]+)$");
     QRegExp expVolumeMute("^/system/volume/mute/$");
     QRegExp expVolumeUnmute("^/system/volume/unmute/$");
+    // file system expressions
+    QRegExp expFsFilesList("^/files/$");
 
     //TODO: add validation
 
@@ -59,6 +66,23 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
         emit volumeSetIsMute(0);
         send200Response(resp, "Volume is unmute!");
     }
+    else if( expFsFilesList.indexIn(req->path()) != -1 )
+    {
+        QStringList filesList;
+        emit fsGetList(filesList);
+
+        QJsonArray json_array;
+        for (int i = 0; i < filesList.size(); ++i)
+        {
+            QJsonObject json_obj;
+            json_obj["file"] = filesList[i];
+            json_array.append(json_obj);
+        }
+        QJsonDocument json_doc;
+        json_doc.setArray(json_array);
+        QString json_string = json_doc.toJson();
+        send200Response(resp, json_string);
+    }
     else
     {
         qDebug() << "Wrong request path!";
@@ -70,7 +94,7 @@ void WebApiController::send200Response(QHttpResponse *resp, QString msg)
 {
     resp->setHeader("Content-Type", "text/html");
     resp->writeHead(200); // 200 OK
-    QString body = tr("<html><head><title>4Share</title></head><body><h1>%1!</h1></body></html>");
+    QString body = tr("%1");
     resp->end(body.arg(msg).toUtf8());
 }
 
@@ -78,6 +102,6 @@ void WebApiController::send403Response(QHttpResponse *resp, QString msg)
 {
     resp->setHeader("Content-Type", "text/html");
     resp->writeHead(403); // 403 Forbidden
-    QString body = tr("<html><head><title>4Share</title></head><body><h1>%1</h1></body></html>");
+    QString body = tr("%1");
     resp->end(body.arg(msg).toUtf8());
 }
