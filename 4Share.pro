@@ -2,7 +2,17 @@ QT += qml quick
 
 CONFIG += c++11
 
-SOURCES += main.cpp
+LIBS += -lqhttpserver
+
+SOURCES += main.cpp \
+    webapicontroller.cpp \
+    systemcontroller.cpp \
+    filesystemcontroller.cpp
+
+HEADERS += \
+    webapicontroller.h \
+    systemcontroller.h \
+    filesystemcontroller.h
 
 RESOURCES += qml.qrc
 
