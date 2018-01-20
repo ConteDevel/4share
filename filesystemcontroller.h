@@ -15,6 +15,7 @@ public:
 
 public slots:
     void getFilesList(QStringList &list);
+    void copyFiles(QStringList &list, QString path, bool isAbsolutePath, bool &res);
 
 private:
     QString rootDir_;

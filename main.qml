@@ -6,10 +6,13 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    title: qsTr("4Share")
+    title: qsTr("4Share - Управление компьютером в локальной сети")
+
+    signal signalServerPortChanged(string newPort)
 
     SwipeView {
         id: swipeView
+        objectName: "obj_swipeView"
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 
@@ -17,9 +20,34 @@ ApplicationWindow {
         }
 
         Page {
-            Label {
-                text: qsTr("Second page")
-                anchors.centerIn: parent
+            Text {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 10
+
+                height: 80
+                text: "Сообщения в журнале логирования:"
+            }
+
+            ListView {
+                id: listView
+
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 45
+
+                delegate: Text {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 30
+
+                    text: modelData
+                }
+
+                model: listModel
             }
         }
     }
@@ -28,10 +56,10 @@ ApplicationWindow {
         id: tabBar
         currentIndex: swipeView.currentIndex
         TabButton {
-            text: qsTr("First")
+            text: qsTr("Управление")
         }
         TabButton {
-            text: qsTr("Second")
+            text: qsTr("Журнал логов")
         }
     }
 }

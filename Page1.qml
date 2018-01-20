@@ -1,7 +1,9 @@
 import QtQuick 2.7
 
 Page1Form {
-    button1.onClicked: {
-        console.log("Button Pressed. Entered text: " + textField1.text);
+    buttonChangePort.onClicked: {
+        // TODO: validate
+        console.log("Button Pressed. Entered text: " + textFieldPort.text);
+        signalServerPortChanged(textFieldPort.text);
     }
 }
