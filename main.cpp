@@ -19,8 +19,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    const QString defaultRootDir = "file:///home/anastasia/tp/cpp/mydir";
-    //"/home/anastasia/tp/cpp/mydir";
+    const QString defaultRootDir = "/home/anastasia/tp/cpp/mydir";
 
     WebApiController webApiController;
     SystemController systemController;

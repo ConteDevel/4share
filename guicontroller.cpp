@@ -53,7 +53,8 @@ void GuiController::onRootDirPathChanged(const QString &newPath)
 void GuiController::onNewLogMsg(const QString msg)
 {
     qDebug() << "New log msg: " << msg;
-    logListModel_.append(msg);
+    logListModel_.insert(0, msg);
+    //logListModel_.append(msg);
     updateLogListModel();
 }
 
