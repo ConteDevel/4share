@@ -10,15 +10,37 @@
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
 
-WebApiController::WebApiController()
+#include "logger.h"
+
+WebApiController::WebApiController(int serverPort)
 {
     // TODO: init server from Settings
-    QHttpServer *server = new QHttpServer(this);
-    connect(server, &QHttpServer::newRequest,
+    httpServer_ = new QHttpServer(this);
+    connect(httpServer_, &QHttpServer::newRequest,
             this, &WebApiController::handleRequest);
-    qDebug() << "Server created";
-    // start server listenning
-    server->listen(QHostAddress::Any, 8080);
+    httpServerPort_ = serverPort;
+}
+
+bool WebApiController::startListen()
+{
+    // start server listenning (using listen QTcpServer method)
+    bool couldStartListen =  httpServer_->listen(QHostAddress::Any, httpServerPort_);
+    if (couldStartListen) {
+        Logger::Instance()->logMsg("HTTP сервер запущен на порту: " + QString::number(httpServerPort_));
+    }
+    return couldStartListen;
+}
+
+bool WebApiController::onPortChangedRestart(int newServerPort)
+{
+    httpServer_->close();
+    httpServerPort_ = newServerPort;
+    return startListen();
+}
+
+int WebApiController::getCurrentPort()
+{
+    return httpServerPort_;
 }
 
 void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
@@ -30,11 +52,13 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
     QRegExp expVolumeMute("^/system/volume/mute/$");
     QRegExp expVolumeUnmute("^/system/volume/unmute/$");
     // file system expressions
-    QRegExp expFsFilesList("^/files/$");
+    QRegExp expFsFilesCopy("^/files/copy$");
+    QRegExp expFsFilesList("^/files/list$");
 
     //TODO: add validation
 
-    qDebug() << "New http request:" << req->path();
+    //qDebug() << "New http request:" << req->path();
+    Logger::Instance()->logMsg("Новый HTTP запрос: " + req->path());
     if( expVolumeSet.indexIn(req->path()) != -1 )
     {
         int value = (expVolumeSet.capturedTexts()[1]).toInt();
@@ -69,19 +93,69 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
     else if( expFsFilesList.indexIn(req->path()) != -1 )
     {
         QStringList filesList;
-        emit fsGetList(filesList);
+        emit fsGetFilesList(filesList);
 
-        QJsonArray json_array;
+        QJsonArray jsonArray;
         for (int i = 0; i < filesList.size(); ++i)
         {
-            QJsonObject json_obj;
-            json_obj["file"] = filesList[i];
-            json_array.append(json_obj);
+            QJsonObject jsonObj;
+            jsonObj["fileName"] = filesList[i];
+            jsonArray.append(jsonObj);
         }
-        QJsonDocument json_doc;
-        json_doc.setArray(json_array);
-        QString json_string = json_doc.toJson();
-        send200Response(resp, json_string);
+        QJsonDocument jsonDoc;
+        jsonDoc.setArray(jsonArray);
+        send200Response(resp, jsonDoc);
+    }
+    else if( expFsFilesCopy.indexIn(req->path()) != -1 )
+    {
+        req->storeBody();
+        QByteArray ba = req->body();
+        QJsonParseError err;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(req->body(), &err);
+        if (jsonDoc.isNull())
+        {
+            qDebug() << "Wrong request data! Error: " << err.errorString();
+            send403Response(resp, "Wrong request body format!");
+        }
+        else
+        {
+            QStringList filesList;
+            QString pathCopyTo;
+            bool isAbsolute;
+
+            QJsonObject jsonObj = jsonDoc.object();
+            qDebug() << "Request json body: " << jsonObj;
+            if (jsonObj.contains("path_copy_to"))
+            {
+                QJsonArray filesJsonArray = jsonObj["files"].toArray();
+                for (int i = 0; i < filesJsonArray.size(); ++i)
+                {
+                    filesList << filesJsonArray[i].toString();
+                }
+                if (jsonObj.contains("path_copy_to"))
+                    pathCopyTo = jsonObj["path_copy_to"].toString("");
+                if (jsonObj.contains("is_absolute"))
+                    isAbsolute = jsonObj["is_absolute"].toBool(false);
+
+                bool result = false;
+                emit fsCopyFiles(filesList, pathCopyTo, isAbsolute, result);
+
+                if (result)
+                {
+                    send200Response(resp, "Files are copied.");
+                }
+                else
+                {
+                    qDebug() << "Can't complete api copy files command!";
+                    send403Response(resp, "Can't copy files!"); // TODO: bad request
+                }
+            }
+            else
+            {
+                qDebug() << "Wrong request data!";
+                send403Response(resp, "Wrong request body format!"); // TODO: bad request
+            }
+        }
     }
     else
     {
@@ -90,12 +164,28 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
     }
 }
 
+void WebApiController::send200Response(QHttpResponse *resp, QJsonDocument jsonDoc)
+{
+    resp->setHeader("Content-Type", "application/json");
+    resp->writeHead(200); // 200 OK
+
+    QString jsonString = jsonDoc.toJson();
+
+    resp->end(jsonString.toUtf8());
+}
+
 void WebApiController::send200Response(QHttpResponse *resp, QString msg)
 {
-    resp->setHeader("Content-Type", "text/html");
+    resp->setHeader("Content-Type", "application/json");
     resp->writeHead(200); // 200 OK
-    QString body = tr("%1");
-    resp->end(body.arg(msg).toUtf8());
+
+    QJsonDocument jsonDoc;
+    QJsonObject jsonObj;
+    jsonObj["result"] = msg;
+    jsonDoc.setObject(jsonObj);
+    QString jsonString = jsonDoc.toJson();
+
+    resp->end(jsonString.toUtf8());
 }
 
 void WebApiController::send403Response(QHttpResponse *resp, QString msg)

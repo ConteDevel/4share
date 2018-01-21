@@ -8,13 +8,14 @@ class FileSystemController : public QObject
 {
     Q_OBJECT
 public:
-    FileSystemController(QString root = "");
+    FileSystemController(QString rootDir = "");
     ~FileSystemController();
 
-    void setRootDir(QString root);
-
 public slots:
+    void onRootDirChanged(QString newRootDir);
+
     void getFilesList(QStringList &list);
+    void copyFiles(QStringList &list, QString path, bool isAbsolutePath, bool &res);
 
 private:
     QString rootDir_;
