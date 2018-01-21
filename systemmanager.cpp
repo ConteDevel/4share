@@ -3,19 +3,19 @@
 #include <QProcess>
 #include <QDebug>
 
-SystemController::SystemController()
+SystemManager::SystemManager()
 {
 
 }
 
-void SystemController::setVolumeValue(int value)
+void SystemManager::setVolumeValue(int value)
 {
     QString command = QString("amixer -D pulse sset Master %1\%").arg(value);
     qDebug() << "System command: " << command;
     QProcess::execute(command);
 }
 
-void SystemController::turnVolumeValue(bool isTurnUp, int value)
+void SystemManager::turnVolumeValue(bool isTurnUp, int value)
 {
     QString sign;
     if (isTurnUp)
@@ -27,7 +27,7 @@ void SystemController::turnVolumeValue(bool isTurnUp, int value)
     QProcess::execute(command);
 }
 
-void SystemController::setVolumeIsMute(bool isMute)
+void SystemManager::setVolumeIsMute(bool isMute)
 {
     QString value;
     if (isMute)

@@ -3,11 +3,11 @@
 
 #include <QObject>
 
-class SystemController : public QObject
+class SystemManager : public QObject
 {
     Q_OBJECT
 public:
-    SystemController();
+    SystemManager();
 
 public slots:
     void setVolumeValue(int value);

@@ -6,17 +6,17 @@ LIBS += -lqhttpserver
 
 SOURCES += main.cpp \
     webapicontroller.cpp \
-    systemcontroller.cpp \
-    filesystemcontroller.cpp \
     logger.cpp \
-    guicontroller.cpp
+    guicontroller.cpp \
+    filesystemmanager.cpp \
+    systemmanager.cpp
 
 HEADERS += \
     webapicontroller.h \
-    systemcontroller.h \
-    filesystemcontroller.h \
     logger.h \
-    guicontroller.h
+    guicontroller.h \
+    systemmanager.h \
+    filesystemmanager.h
 
 RESOURCES += qml.qrc
 

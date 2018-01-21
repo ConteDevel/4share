@@ -1,21 +1,21 @@
-#include "filesystemcontroller.h"
+#include "filesystemmanager.h"
 
-FileSystemController::FileSystemController(QString rootDir)
+FileSystemManager::FileSystemManager(QString rootDir)
 {
     rootDir_ = rootDir;
 }
 
-FileSystemController::~FileSystemController()
+FileSystemManager::~FileSystemManager()
 {
 
 }
 
-void FileSystemController::onRootDirChanged(QString newRootDir)
+void FileSystemManager::onRootDirChanged(QString newRootDir)
 {
     rootDir_= newRootDir;
 }
 
-void FileSystemController::getFilesList(QStringList &list)
+void FileSystemManager::getFilesList(QStringList &list)
 {
     // Set settings for root directory
     QDir dir(rootDir_);
@@ -29,7 +29,7 @@ void FileSystemController::getFilesList(QStringList &list)
     }
 }
 
-void FileSystemController::copyFiles(QStringList &list, QString path,
+void FileSystemManager::copyFiles(QStringList &list, QString path,
                                      bool isAbsolutePath, bool& res)
 {
     res = true;
