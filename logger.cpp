@@ -1,3 +1,5 @@
+#include <QDateTime>
+
 #include "logger.h"
 
 // Initialization of Logger static members
@@ -46,6 +48,7 @@ bool Logger::setMinLogLevel(Logger::LogLevel minLogLevel)
 
 void Logger::logMsg(QString msg)
 {
+    msg = "[" + QDateTime::currentDateTime().toString() + "]: " + msg;
     emit newLogMsg(msg);
     // TODO: log in file
 }
