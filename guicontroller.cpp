@@ -50,7 +50,7 @@ void GuiController::onRootDirPathChanged(const QString &newPath)
     emit rootDirPathChanged(newPath);
 }
 
-void GuiController::onNewLogMsg(const QString msg)
+void GuiController::onNewLogMsg(QString msg)
 {
     qDebug() << "New log msg: " << msg;
     logListModel_.insert(0, msg);
@@ -58,7 +58,7 @@ void GuiController::onNewLogMsg(const QString msg)
     updateLogListModel();
 }
 
-void GuiController::updateServerPortField(const int port)
+void GuiController::updateServerPortField(int port)
 {
     QObject* textFieldPort = rootAppWindow_->findChild<QObject*>("obj_textfieldport");
     if(!textFieldPort)
@@ -69,7 +69,7 @@ void GuiController::updateServerPortField(const int port)
     textFieldPort->setProperty("text", QString::number(port));
 }
 
-void GuiController::updateRootDirPathField(const QString path)
+void GuiController::updateRootDirPathField(QString path)
 {
     qDebug() << "updateRootDirPathField";
     QObject* textFieldPath = rootAppWindow_->findChild<QObject*>("obj_textfieldpath");

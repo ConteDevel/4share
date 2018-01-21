@@ -1,4 +1,4 @@
-#include "systemcontroller.h"
+#include "systemmanager.h"
 
 #include <QProcess>
 #include <QDebug>

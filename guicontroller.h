@@ -11,8 +11,8 @@ public:
     explicit GuiController(QObject *parent = nullptr);
     bool initialize();
 
-    void updateServerPortField(const int port);
-    void updateRootDirPathField(const QString path);
+    void updateServerPortField(int port);
+    void updateRootDirPathField(QString path);
 
 private:
     void updateLogListModel();
@@ -24,7 +24,7 @@ signals:
 public slots:
     void onServerPortChanged(const QString &newPort);
     void onRootDirPathChanged(const QString &newPath);
-    void onNewLogMsg(const QString msg);
+    void onNewLogMsg(QString msg);
 
 private:
     QStringList logListModel_;
