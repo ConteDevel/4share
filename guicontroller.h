@@ -12,15 +12,18 @@ public:
     bool initialize();
 
     void updateServerPortField(const int port);
+    void updateRootDirPathField(const QString path);
 
 private:
     void updateLogListModel();
 
 signals:
     void portChanged(int newPort);
+    void rootDirPathChanged(QString newPath);
 
 public slots:
     void onServerPortChanged(const QString &newPort);
+    void onRootDirPathChanged(const QString &newPath);
     void onNewLogMsg(const QString msg);
 
 private:

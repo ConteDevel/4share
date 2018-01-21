@@ -9,10 +9,10 @@ ApplicationWindow {
     title: qsTr("4Share - Управление компьютером в локальной сети")
 
     signal signalServerPortChanged(string newPort)
+    signal signalRootDirPathChanged(string newPath)
 
     SwipeView {
         id: swipeView
-        objectName: "obj_swipeView"
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
 

@@ -19,15 +19,18 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    const QString defaultRootDir = "/home/anastasia/tp/cpp/mydir";
+    const QString defaultRootDir = "file:///home/anastasia/tp/cpp/mydir";
+    //"/home/anastasia/tp/cpp/mydir";
 
     WebApiController webApiController;
     SystemController systemController;
     FileSystemController fileSystemController(defaultRootDir);
 
-    // connection gui controller signals to slots
+    // connection GUI controller signals to slots
     QObject::connect(&guiController, &GuiController::portChanged,
                         &webApiController, &WebApiController::onPortChangedRestart);
+    QObject::connect(&guiController, &GuiController::rootDirPathChanged,
+                        &fileSystemController, &FileSystemController::onRootDirChanged);
     // connection logger signals to slots
     QObject::connect(Logger::Instance(), &Logger::newLogMsg,
                         &guiController, &GuiController::onNewLogMsg);
@@ -45,6 +48,8 @@ int main(int argc, char *argv[])
                         &fileSystemController, &FileSystemController::copyFiles);
 
     guiController.updateServerPortField(webApiController.getCurrentPort());
+    guiController.updateRootDirPathField(defaultRootDir);
+
     webApiController.startListen();
 
     const int retVal = app.exec();

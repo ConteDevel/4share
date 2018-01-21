@@ -58,7 +58,7 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
     //TODO: add validation
 
     //qDebug() << "New http request:" << req->path();
-    Logger::Instance()->logMsg("New http request!");
+    Logger::Instance()->logMsg("Новый HTTP запрос: " + req->path());
     if( expVolumeSet.indexIn(req->path()) != -1 )
     {
         int value = (expVolumeSet.capturedTexts()[1]).toInt();

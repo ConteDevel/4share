@@ -1,8 +1,8 @@
 #include "filesystemcontroller.h"
 
-FileSystemController::FileSystemController(QString root)
+FileSystemController::FileSystemController(QString rootDir)
 {
-    rootDir_ = root;
+    rootDir_ = rootDir;
 }
 
 FileSystemController::~FileSystemController()
@@ -10,9 +10,9 @@ FileSystemController::~FileSystemController()
 
 }
 
-void FileSystemController::setRootDir(QString root)
+void FileSystemController::onRootDirChanged(QString newRootDir)
 {
-    rootDir_= root;
+    rootDir_= newRootDir;
 }
 
 void FileSystemController::getFilesList(QStringList &list)
