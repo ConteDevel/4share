@@ -16,6 +16,7 @@ public:
 
 private:
     void updateLogListModel();
+    void displayErrorMsg(QString msg);
 
 signals:
     void portChanged(int newPort);
@@ -24,7 +25,8 @@ signals:
 public slots:
     void onServerPortChanged(const QString &newPort);
     void onRootDirPathChanged(const QString &newPath);
-    void onNewLogMsg(QString msg);
+    void onNewLogMsg(QString logMsg);
+    void onNewErrorLogMsg(QString logMsg, QString errorMsg);
 
 private:
     QStringList logListModel_;

@@ -1,4 +1,4 @@
-#include "webapicontroller.h"
+#include "api_controller.h"
 
 #include <QDebug>
 
@@ -12,38 +12,44 @@
 
 #include "logger.h"
 
-WebApiController::WebApiController(int serverPort)
+ApiController::ApiController(int serverPort)
 {
     // TODO: init server from Settings
     httpServer_ = new QHttpServer(this);
     connect(httpServer_, &QHttpServer::newRequest,
-            this, &WebApiController::handleRequest);
+            this, &ApiController::handleRequest);
     httpServerPort_ = serverPort;
 }
 
-bool WebApiController::startListen()
+bool ApiController::startListen()
 {
     // start server listenning (using listen QTcpServer method)
     bool couldStartListen =  httpServer_->listen(QHostAddress::Any, httpServerPort_);
     if (couldStartListen) {
-        Logger::Instance()->logMsg("HTTP сервер запущен на порту: " + QString::number(httpServerPort_));
+        Logger::Instance()->logMsg("HTTP сервер запущен на порту: "
+                                        + QString::number(httpServerPort_));
+    }
+    else {
+        Logger::Instance()->logMsg("Не удалось запустить сервер на порту: "
+                                   + QString::number(httpServerPort_),
+                                   Logger::LogLevel::ERROR);
     }
     return couldStartListen;
 }
 
-bool WebApiController::onPortChangedRestart(int newServerPort)
+bool ApiController::onPortChangedRestart(int newServerPort)
 {
     httpServer_->close();
     httpServerPort_ = newServerPort;
     return startListen();
 }
 
-int WebApiController::getCurrentPort()
+int ApiController::getCurrentPort()
 {
     return httpServerPort_;
 }
 
-void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
+void ApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
 {
     // system volume expressions
     QRegExp expVolumeSet("^/system/volume/set/([0-9]+)$");
@@ -164,7 +170,7 @@ void WebApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
     }
 }
 
-void WebApiController::send200Response(QHttpResponse *resp, QJsonDocument jsonDoc)
+void ApiController::send200Response(QHttpResponse *resp, QJsonDocument jsonDoc)
 {
     resp->setHeader("Content-Type", "application/json");
     resp->writeHead(200); // 200 OK
@@ -174,7 +180,7 @@ void WebApiController::send200Response(QHttpResponse *resp, QJsonDocument jsonDo
     resp->end(jsonString.toUtf8());
 }
 
-void WebApiController::send200Response(QHttpResponse *resp, QString msg)
+void ApiController::send200Response(QHttpResponse *resp, QString msg)
 {
     resp->setHeader("Content-Type", "application/json");
     resp->writeHead(200); // 200 OK
@@ -188,7 +194,7 @@ void WebApiController::send200Response(QHttpResponse *resp, QString msg)
     resp->end(jsonString.toUtf8());
 }
 
-void WebApiController::send403Response(QHttpResponse *resp, QString msg)
+void ApiController::send403Response(QHttpResponse *resp, QString msg)
 {
     resp->setHeader("Content-Type", "text/html");
     resp->writeHead(403); // 403 Forbidden

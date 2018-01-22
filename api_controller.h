@@ -1,16 +1,16 @@
-#ifndef WEBAPICONTROLLER_H
-#define WEBAPICONTROLLER_H
+#ifndef APICONTROLLER_H
+#define APICONTROLLER_H
 
 #include <QObject>
 #include <QJsonDocument>
 
 #include "qhttpserverfwd.h"
 
-class WebApiController : public QObject
+class ApiController : public QObject
 {
     Q_OBJECT
 public:
-    WebApiController(int serverPort = defaultHttpServerPort);
+    ApiController(int serverPort = defaultHttpServerPort);
     bool startListen();
     int getCurrentPort();
 
@@ -38,4 +38,4 @@ private:
     QHttpServer* httpServer_;
 };
 
-#endif // WEBAPICONTROLLER_H
+#endif // APICONTROLLER_H

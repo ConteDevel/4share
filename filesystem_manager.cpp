@@ -1,4 +1,4 @@
-#include "filesystemmanager.h"
+#include "filesystem_manager.h"
 
 FileSystemManager::FileSystemManager(QString rootDir)
 {
