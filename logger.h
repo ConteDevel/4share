@@ -32,8 +32,8 @@ private:
     QString getLogLevelString(LogLevel logLevel);
 
     Logger(QObject* parent);
-    //Logger(Logger const&) = 0;
-    //Logger& operator=(Logger const&) = 0;
+    Logger(Logger const&);
+    Logger& operator=(Logger const&);
     ~Logger();
 
     static LogLevel minLogLevel_;

@@ -43,6 +43,7 @@ void FileSystemManager::copyFiles(QStringList &list, QString path,
             copyTo = path+list[i];
         else
             copyTo = rootDir_ + path + list[i];
+
         if (!QFile::copy(rootDir_+list[i], copyTo))
         {
             res = false;

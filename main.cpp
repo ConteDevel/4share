@@ -15,9 +15,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     GuiController guiController(nullptr);
-    if (!guiController.initialize()) {
+    if (!guiController.initialize())
         return -1;
-    }
 
     const QString defaultRootDir = "/home/anastasia/tp/cpp/mydir";
 

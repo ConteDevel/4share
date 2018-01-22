@@ -50,7 +50,8 @@ void GuiController::onServerPortChanged(const QString &newPort)
     qDebug() << "New server port from gui: " << newPort;
     bool isIntegerNewPort = false;
     int port = newPort.toInt(&isIntegerNewPort);
-    if (isIntegerNewPort) {
+    if (isIntegerNewPort)
+    {
         qDebug() << "Port is ok";
         emit portChanged(port);
     }

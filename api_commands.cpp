@@ -19,12 +19,10 @@ bool VolumeMuteCommand::execute(ApiController& apiController)
 {
     emit apiController.volumeSetIsMute(isMute_);
     QString action;
-    if (isMute_) {
+    if (isMute_)
         action = "mute";
-    }
-    else {
+    else
         action = "unmute";
-    }
     data_ = "Volume is " + action;
     return true;
 }

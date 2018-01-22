@@ -19,7 +19,8 @@ Logger::~Logger()
 
 Logger *Logger::Instance(QObject* parent)
 {
-    if(!logger_) {
+    if(!logger_)
+    {
         logger_ = new Logger(parent);
         // TODO: open log file
     }
@@ -28,7 +29,8 @@ Logger *Logger::Instance(QObject* parent)
 
 void Logger::Destroy()
 {
-    if(logger_) {
+    if(logger_)
+    {
         // TODO: close log file
         delete logger_;
     }
@@ -50,19 +52,19 @@ void Logger::logMsg(QString msg, Logger::LogLevel logLevel)
 {
     QString logMsg = "[ " + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + " - "
              + getLogLevelString(logLevel) + " ]: " + msg;
-    if (logLevel == LogLevel::ERROR) {
+    if (logLevel == LogLevel::ERROR)
         emit newErrorLogMsg(logMsg, msg);
-    }
-    else {
+    else
         emit newLogMsg(logMsg);
-    }
+
     // TODO: log in file
 }
 
 QString Logger::getLogLevelString(Logger::LogLevel logLevel)
 {
     QString logLevelString = "UNKNOWN";
-    switch (logLevel) {
+    switch (logLevel)
+    {
     case LogLevel::DEBUG:
         logLevelString = "DEBUG";
         break;
