@@ -12,4 +12,4 @@
 
 ### Страница журнала логирования
 
-![alt text](screenshots/screenshot_logger.png "Страница журнала логирования")
+![alt text](screenshots/screenshot_logs.png "Страница журнала логирования")
