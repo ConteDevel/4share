@@ -22,12 +22,14 @@ public:
 
     bool setLogFileName(QString fileName);
     bool setMinLogLevel(LogLevel minLogLevel);
-    void logMsg(QString msg);//, LogLevel logLevel = DEBUG);
+    void logMsg(QString msg, LogLevel logLevel = INFO);
 
 signals:
     void newLogMsg(QString msg);
 
 private:
+    QString getLogLevelString(LogLevel logLevel);
+
     Logger(QObject* parent);
     //Logger(Logger const&) = 0;
     //Logger& operator=(Logger const&) = 0;

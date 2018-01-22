@@ -46,9 +46,32 @@ bool Logger::setMinLogLevel(Logger::LogLevel minLogLevel)
     return true;
 }
 
-void Logger::logMsg(QString msg)
+void Logger::logMsg(QString msg, Logger::LogLevel logLevel)
 {
-    msg = "[" + QDateTime::currentDateTime().toString() + "]: " + msg;
+    msg = "[ " + getLogLevelString(logLevel) + " - " +
+            QDateTime::currentDateTime().toString() + " ]: " + msg;
     emit newLogMsg(msg);
     // TODO: log in file
+}
+
+QString Logger::getLogLevelString(Logger::LogLevel logLevel)
+{
+    QString logLevelString = "UNKNOWN";
+    switch (logLevel) {
+    case LogLevel::DEBUG:
+        logLevelString = "DEBUG";
+        break;
+    case LogLevel::INFO:
+        logLevelString = "INFO";
+        break;
+    case LogLevel::WARNING:
+        logLevelString = "WARNING";
+        break;
+    case LogLevel::ERROR:
+        logLevelString = "ERROR";
+        break;
+    default:
+        break;
+    }
+    return logLevelString;
 }
