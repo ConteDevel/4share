@@ -116,6 +116,7 @@ void ApiController::send200Response(QHttpResponse *resp, QJsonDocument jsonDoc)
     qDebug(jsonDoc.toJson());
 
     resp->end(jsonString.toUtf8());
+    Logger::Instance()->logMsg("Отправлен ответ на запрос с HTTP кодом 200");
 }
 
 void ApiController::send403Response(QHttpResponse *resp, QString msg)
@@ -124,4 +125,5 @@ void ApiController::send403Response(QHttpResponse *resp, QString msg)
     resp->writeHead(403); // 403 Forbidden
     QString body = tr("%1");
     resp->end(body.arg(msg).toUtf8());
+    Logger::Instance()->logMsg("Отправлен ответ на запрос с HTTP кодом 403");
 }

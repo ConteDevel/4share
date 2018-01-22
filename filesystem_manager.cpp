@@ -1,4 +1,5 @@
 #include "filesystem_manager.h"
+#include "logger.h"
 
 FileSystemManager::FileSystemManager(QString rootDir)
 {
@@ -13,6 +14,7 @@ FileSystemManager::~FileSystemManager()
 void FileSystemManager::onRootDirChanged(QString newRootDir)
 {
     rootDir_= newRootDir;
+    Logger::Instance()->logMsg("Корневая директория изменена на: " + rootDir_);
 }
 
 void FileSystemManager::getFilesList(QStringList &list)
@@ -27,6 +29,7 @@ void FileSystemManager::getFilesList(QStringList &list)
     {
         list << fileInfolist.at(i).fileName();
     }
+    Logger::Instance()->logMsg("Передан список файлов корневой директории");
 }
 
 void FileSystemManager::copyFiles(QStringList &list, QString path,
