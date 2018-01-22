@@ -10,10 +10,14 @@
 #include <qhttprequest.h>
 #include <qhttpresponse.h>
 
+#include "api_commands.h"
 #include "logger.h"
 
 ApiController::ApiController(int serverPort)
 {
+    // initialize request parser
+    requestParser_ = new ApiRequestParser();
+
     // TODO: init server from Settings
     httpServer_ = new QHttpServer(this);
     connect(httpServer_, &QHttpServer::newRequest,
@@ -51,122 +55,21 @@ int ApiController::getCurrentPort()
 
 void ApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
 {
-    // system volume expressions
-    QRegExp expVolumeSet("^/system/volume/set/([0-9]+)$");
-    QRegExp expVolumeTurnUp("^/system/volume/up/([0-9]+)$");
-    QRegExp expVolumeTurnDown("^/system/volume/down/([0-9]+)$");
-    QRegExp expVolumeMute("^/system/volume/mute/$");
-    QRegExp expVolumeUnmute("^/system/volume/unmute/$");
-    // file system expressions
-    QRegExp expFsFilesCopy("^/files/copy$");
-    QRegExp expFsFilesList("^/files/list$");
-
-    //TODO: add validation
-
-    //qDebug() << "New http request:" << req->path();
-    Logger::Instance()->logMsg("Новый HTTP запрос: " + req->path());
-    if( expVolumeSet.indexIn(req->path()) != -1 )
+    ApiCommand* command = requestParser_->parseRequest(req);
+    if (!command)
     {
-        int value = (expVolumeSet.capturedTexts()[1]).toInt();
-        emit volumeSetValue(value);
-        QString msg = QString("Volume set to %1!").arg(value);
-        send200Response(resp, msg);
+        qDebug() << "Wrong request!";
+        send403Response(resp, "Wrong request!");
+        return;
     }
-    else if( expVolumeTurnUp.indexIn(req->path()) != -1 )
-    {
-        int value = (expVolumeTurnUp.capturedTexts()[1]).toInt();
-        emit volumeTurnValue(1, value);
-        QString msg = QString("Volume turn up for %1!").arg(value);
-        send200Response(resp, msg);
-    }
-    else if( expVolumeTurnDown.indexIn(req->path()) != -1 )
-    {
-        int value = (expVolumeTurnDown.capturedTexts()[1]).toInt();
-        emit volumeTurnValue(0, value);
-        QString msg = QString("Volume turn down for %1!").arg(value);
-        send200Response(resp, msg);
-    }
-    else if( expVolumeMute.indexIn(req->path()) != -1 )
-    {
-        emit volumeSetIsMute(1);
-        send200Response(resp, "Volume is mute!");
-    }
-    else if( expVolumeUnmute.indexIn(req->path()) != -1 )
-    {
-        emit volumeSetIsMute(0);
-        send200Response(resp, "Volume is unmute!");
-    }
-    else if( expFsFilesList.indexIn(req->path()) != -1 )
-    {
-        QStringList filesList;
-        emit fsGetFilesList(filesList);
 
-        QJsonArray jsonArray;
-        for (int i = 0; i < filesList.size(); ++i)
-        {
-            QJsonObject jsonObj;
-            jsonObj["fileName"] = filesList[i];
-            jsonArray.append(jsonObj);
-        }
-        QJsonDocument jsonDoc;
-        jsonDoc.setArray(jsonArray);
-        send200Response(resp, jsonDoc);
-    }
-    else if( expFsFilesCopy.indexIn(req->path()) != -1 )
+    if (command->execute(*this))
     {
-        req->storeBody();
-        QByteArray ba = req->body();
-        QJsonParseError err;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(req->body(), &err);
-        if (jsonDoc.isNull())
-        {
-            qDebug() << "Wrong request data! Error: " << err.errorString();
-            send403Response(resp, "Wrong request body format!");
-        }
-        else
-        {
-            QStringList filesList;
-            QString pathCopyTo;
-            bool isAbsolute;
-
-            QJsonObject jsonObj = jsonDoc.object();
-            qDebug() << "Request json body: " << jsonObj;
-            if (jsonObj.contains("path_copy_to"))
-            {
-                QJsonArray filesJsonArray = jsonObj["files"].toArray();
-                for (int i = 0; i < filesJsonArray.size(); ++i)
-                {
-                    filesList << filesJsonArray[i].toString();
-                }
-                if (jsonObj.contains("path_copy_to"))
-                    pathCopyTo = jsonObj["path_copy_to"].toString("");
-                if (jsonObj.contains("is_absolute"))
-                    isAbsolute = jsonObj["is_absolute"].toBool(false);
-
-                bool result = false;
-                emit fsCopyFiles(filesList, pathCopyTo, isAbsolute, result);
-
-                if (result)
-                {
-                    send200Response(resp, "Files are copied.");
-                }
-                else
-                {
-                    qDebug() << "Can't complete api copy files command!";
-                    send403Response(resp, "Can't copy files!"); // TODO: bad request
-                }
-            }
-            else
-            {
-                qDebug() << "Wrong request data!";
-                send403Response(resp, "Wrong request body format!"); // TODO: bad request
-            }
-        }
+        send200Response(resp, command->getReturnedData().toString());
     }
     else
     {
-        qDebug() << "Wrong request path!";
-        send403Response(resp, "You are not allowed here!");
+        send403Response(resp, "Something is wrong");
     }
 }
 

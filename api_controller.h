@@ -6,11 +6,14 @@
 
 #include "qhttpserverfwd.h"
 
+#include "api_request_parser.h"
+
+class ApiRequestParser;
 class ApiController : public QObject
 {
     Q_OBJECT
 public:
-    ApiController(int serverPort = defaultHttpServerPort);
+    ApiController(int serverPort = defaultHttpServerPort_);
     bool startListen();
     int getCurrentPort();
 
@@ -33,8 +36,9 @@ private slots:
     void send403Response(QHttpResponse *resp, QString msg);
 
 private:
-    static constexpr int defaultHttpServerPort = 8080;
+    static constexpr int defaultHttpServerPort_ = 8080;
     int httpServerPort_;
+    ApiRequestParser* requestParser_;
     QHttpServer* httpServer_;
 };
 
