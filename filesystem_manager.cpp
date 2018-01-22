@@ -1,21 +1,23 @@
-#include "filesystemcontroller.h"
+#include "filesystem_manager.h"
+#include "logger.h"
 
-FileSystemController::FileSystemController(QString rootDir)
+FileSystemManager::FileSystemManager(QString rootDir)
 {
     rootDir_ = rootDir;
 }
 
-FileSystemController::~FileSystemController()
+FileSystemManager::~FileSystemManager()
 {
 
 }
 
-void FileSystemController::onRootDirChanged(QString newRootDir)
+void FileSystemManager::onRootDirChanged(QString newRootDir)
 {
     rootDir_= newRootDir;
+    Logger::Instance()->logMsg("Корневая директория изменена на: " + rootDir_);
 }
 
-void FileSystemController::getFilesList(QStringList &list)
+void FileSystemManager::getFilesList(QStringList &list)
 {
     // Set settings for root directory
     QDir dir(rootDir_);
@@ -27,9 +29,10 @@ void FileSystemController::getFilesList(QStringList &list)
     {
         list << fileInfolist.at(i).fileName();
     }
+    Logger::Instance()->logMsg("Передан список файлов корневой директории");
 }
 
-void FileSystemController::copyFiles(QStringList &list, QString path,
+void FileSystemManager::copyFiles(QStringList &list, QString path,
                                      bool isAbsolutePath, bool& res)
 {
     res = true;
@@ -40,6 +43,7 @@ void FileSystemController::copyFiles(QStringList &list, QString path,
             copyTo = path+list[i];
         else
             copyTo = rootDir_ + path + list[i];
+
         if (!QFile::copy(rootDir_+list[i], copyTo))
         {
             res = false;

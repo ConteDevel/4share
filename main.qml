@@ -2,6 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Window 2.3
+import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     visible: true
@@ -13,6 +14,8 @@ ApplicationWindow {
 
     signal signalServerPortChanged(string newPort)
     signal signalRootDirPathChanged(string newPath)
+
+    property alias messageDialogError: messageDialogError
 
     SwipeView {
         id: swipeView
@@ -67,6 +70,18 @@ ApplicationWindow {
         }
         TabButton {
             text: qsTr("Журнал логов")
+        }
+    }
+
+    MessageDialog {
+        id: messageDialogError
+        objectName: "obj_mderror"
+        width: 250
+        title: "Внимание - возникла ошибка!"
+        function displayErrorDialog(msg) {
+            console.log("QML recieved error message: ", msg)
+            messageDialogError.setText(msg)
+            messageDialogError.open()
         }
     }
 }

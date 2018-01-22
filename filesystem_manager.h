@@ -4,12 +4,12 @@
 #include <QObject>
 #include <QDir>
 
-class FileSystemController : public QObject
+class FileSystemManager : public QObject
 {
     Q_OBJECT
 public:
-    FileSystemController(QString rootDir = "");
-    ~FileSystemController();
+    FileSystemManager(QString rootDir = "");
+    ~FileSystemManager();
 
 public slots:
     void onRootDirChanged(QString newRootDir);

@@ -5,18 +5,22 @@ CONFIG += c++11
 LIBS += -lqhttpserver
 
 SOURCES += main.cpp \
-    webapicontroller.cpp \
-    systemcontroller.cpp \
-    filesystemcontroller.cpp \
     logger.cpp \
-    guicontroller.cpp
+    api_request_parser.cpp \
+    api_commands.cpp \
+    filesystem_manager.cpp \
+    system_manager.cpp \
+    gui_controller.cpp \
+    api_controller.cpp
 
 HEADERS += \
-    webapicontroller.h \
-    systemcontroller.h \
-    filesystemcontroller.h \
     logger.h \
-    guicontroller.h
+    api_request_parser.h \
+    api_commands.h \
+    filesystem_manager.h \
+    system_manager.h \
+    gui_controller.h \
+    api_controller.h
 
 RESOURCES += qml.qrc
 

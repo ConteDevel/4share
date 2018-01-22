@@ -1,16 +1,19 @@
-#ifndef WEBAPICONTROLLER_H
-#define WEBAPICONTROLLER_H
+#ifndef APICONTROLLER_H
+#define APICONTROLLER_H
 
 #include <QObject>
 #include <QJsonDocument>
 
 #include "qhttpserverfwd.h"
 
-class WebApiController : public QObject
+#include "api_request_parser.h"
+
+class ApiRequestParser;
+class ApiController : public QObject
 {
     Q_OBJECT
 public:
-    WebApiController(int serverPort = defaultHttpServerPort);
+    ApiController(int serverPort = defaultHttpServerPort_);
     bool startListen();
     int getCurrentPort();
 
@@ -28,14 +31,15 @@ public slots:
 
 private slots:
     void handleRequest(QHttpRequest *req, QHttpResponse *resp);
+    bool serializeResponse(QVariant data, QJsonDocument& jsonDoc);
     void send200Response(QHttpResponse *resp, QJsonDocument jsonDoc);
-    void send200Response(QHttpResponse *resp, QString msg);
     void send403Response(QHttpResponse *resp, QString msg);
 
 private:
-    static constexpr int defaultHttpServerPort = 8080;
+    static constexpr int defaultHttpServerPort_ = 8080;
     int httpServerPort_;
+    ApiRequestParser* requestParser_;
     QHttpServer* httpServer_;
 };
 
-#endif // WEBAPICONTROLLER_H
+#endif // APICONTROLLER_H

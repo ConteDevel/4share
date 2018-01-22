@@ -1,21 +1,24 @@
-#include "systemcontroller.h"
+#include "system_manager.h"
 
 #include <QProcess>
 #include <QDebug>
 
-SystemController::SystemController()
+#include "logger.h"
+
+SystemManager::SystemManager()
 {
 
 }
 
-void SystemController::setVolumeValue(int value)
+void SystemManager::setVolumeValue(int value)
 {
     QString command = QString("amixer -D pulse sset Master %1\%").arg(value);
     qDebug() << "System command: " << command;
     QProcess::execute(command);
+    Logger::Instance()->logMsg(QString("Громкость установлена на: %1\%").arg(value));
 }
 
-void SystemController::turnVolumeValue(bool isTurnUp, int value)
+void SystemManager::turnVolumeValue(bool isTurnUp, int value)
 {
     QString sign;
     if (isTurnUp)
@@ -25,9 +28,10 @@ void SystemController::turnVolumeValue(bool isTurnUp, int value)
     QString command = QString("amixer -D pulse sset Master %1\%%2").arg(value).arg(sign);
     qDebug() << "System command: " << command;
     QProcess::execute(command);
+    Logger::Instance()->logMsg(QString("Громкость изменена на: %1%2\%").arg(sign).arg(value));
 }
 
-void SystemController::setVolumeIsMute(bool isMute)
+void SystemManager::setVolumeIsMute(bool isMute)
 {
     QString value;
     if (isMute)
@@ -37,4 +41,5 @@ void SystemController::setVolumeIsMute(bool isMute)
     QString command = QString("amixer -D pulse sset Master %1").arg(value);
     qDebug() << "System command: " << command;
     QProcess::execute(command);
+    Logger::Instance()->logMsg(QString("Громкость изменена на: %1").arg(value));
 }
