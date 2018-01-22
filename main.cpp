@@ -21,13 +21,13 @@ int main(int argc, char *argv[])
 
     const QString defaultRootDir = "/home/anastasia/tp/cpp/mydir";
 
-    ApiController ApiController;
+    ApiController apiController;
     SystemManager systemController;
     FileSystemManager fileSystemController(defaultRootDir);
 
     // connection GUI controller signals to slots
     QObject::connect(&guiController, &GuiController::portChanged,
-                        &ApiController, &ApiController::onPortChangedRestart);
+                        &apiController, &ApiController::onPortChangedRestart);
     QObject::connect(&guiController, &GuiController::rootDirPathChanged,
                         &fileSystemController, &FileSystemManager::onRootDirChanged);
     // connection logger signals to slots
@@ -36,22 +36,22 @@ int main(int argc, char *argv[])
     QObject::connect(Logger::Instance(), &Logger::newErrorLogMsg,
                         &guiController, &GuiController::onNewErrorLogMsg);
     // connecting web controller signals to slots
-    QObject::connect(&ApiController, &ApiController::volumeSetValue,
+    QObject::connect(&apiController, &ApiController::volumeSetValue,
                          &systemController, &SystemManager::setVolumeValue);
-    QObject::connect(&ApiController, &ApiController::volumeTurnValue,
+    QObject::connect(&apiController, &ApiController::volumeTurnValue,
                          &systemController, &SystemManager::turnVolumeValue);
-    QObject::connect(&ApiController, &ApiController::volumeSetIsMute,
+    QObject::connect(&apiController, &ApiController::volumeSetIsMute,
                          &systemController, &SystemManager::setVolumeIsMute);
     // connectiong web api signals to slots
-    QObject::connect(&ApiController, &ApiController::fsGetFilesList,
+    QObject::connect(&apiController, &ApiController::fsGetFilesList,
                         &fileSystemController, &FileSystemManager::getFilesList);
-    QObject::connect(&ApiController, &ApiController::fsCopyFiles,
+    QObject::connect(&apiController, &ApiController::fsCopyFiles,
                         &fileSystemController, &FileSystemManager::copyFiles);
 
-    guiController.updateServerPortField(ApiController.getCurrentPort());
+    guiController.updateServerPortField(apiController.getCurrentPort());
     guiController.updateRootDirPathField(defaultRootDir);
 
-    ApiController.startListen();
+    apiController.startListen();
 
     const int retVal = app.exec();
 
