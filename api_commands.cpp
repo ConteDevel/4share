@@ -52,3 +52,15 @@ bool VolumeTurnValueCommand::execute(ApiController &apiController)
     data_ = QString("Volume turn up for %1!").arg(value_);
     return true;
 }
+
+GetFileListCommand::GetFileListCommand()
+{
+}
+
+bool GetFileListCommand::execute(ApiController &apiController)
+{
+    QStringList filesList;
+    emit apiController.fsGetFilesList(filesList);
+    data_ = filesList;
+    return true;
+}

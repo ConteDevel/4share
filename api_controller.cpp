@@ -65,12 +65,46 @@ void ApiController::handleRequest(QHttpRequest *req, QHttpResponse *resp)
 
     if (command->execute(*this))
     {
-        send200Response(resp, command->getReturnedData().toString());
+        QJsonDocument respJsonDoc;
+        if (serializeResponse(command->getReturnedData(), respJsonDoc))
+        {
+            send200Response(resp, respJsonDoc);
+            return;
+        }
     }
-    else
+
+    send403Response(resp, "Something is wrong");
+}
+
+bool ApiController::serializeResponse(QVariant data, QJsonDocument& jsonDoc)
+{
+    if (data.isNull())
     {
-        send403Response(resp, "Something is wrong");
+        return false;
     }
+    else if (data.type() == QMetaType::QString)
+    {
+        qDebug() << "serializing QString";
+        QJsonObject jsonObj;
+        jsonObj["result"] = data.toString();
+        jsonDoc.setObject(jsonObj);
+    }
+    else if (data.type() == QMetaType::QStringList)
+    {
+        qDebug() << "serializing QStringList";
+        QStringList list = data.toStringList();
+        qDebug() << list;
+        QJsonArray jsonArray;
+        for (int i = 0; i < list.size(); ++i)
+        {
+            qDebug() << "serializing QStringList object";
+            QJsonObject jsonObj;
+            jsonObj["name"] = list[i];
+            jsonArray.append(jsonObj);
+        }
+        jsonDoc.setArray(jsonArray);
+    }
+    return true;
 }
 
 void ApiController::send200Response(QHttpResponse *resp, QJsonDocument jsonDoc)
@@ -79,20 +113,7 @@ void ApiController::send200Response(QHttpResponse *resp, QJsonDocument jsonDoc)
     resp->writeHead(200); // 200 OK
 
     QString jsonString = jsonDoc.toJson();
-
-    resp->end(jsonString.toUtf8());
-}
-
-void ApiController::send200Response(QHttpResponse *resp, QString msg)
-{
-    resp->setHeader("Content-Type", "application/json");
-    resp->writeHead(200); // 200 OK
-
-    QJsonDocument jsonDoc;
-    QJsonObject jsonObj;
-    jsonObj["result"] = msg;
-    jsonDoc.setObject(jsonObj);
-    QString jsonString = jsonDoc.toJson();
+    qDebug(jsonDoc.toJson());
 
     resp->end(jsonString.toUtf8());
 }

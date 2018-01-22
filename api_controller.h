@@ -31,8 +31,8 @@ public slots:
 
 private slots:
     void handleRequest(QHttpRequest *req, QHttpResponse *resp);
+    bool serializeResponse(QVariant data, QJsonDocument& jsonDoc);
     void send200Response(QHttpResponse *resp, QJsonDocument jsonDoc);
-    void send200Response(QHttpResponse *resp, QString msg);
     void send403Response(QHttpResponse *resp, QString msg);
 
 private:

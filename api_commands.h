@@ -50,4 +50,14 @@ protected:
     int value_;
 };
 
+class GetFileListCommand : public ApiCommand
+{
+public:
+    explicit GetFileListCommand();
+    virtual bool execute(ApiController& apiController);
+
+protected:
+
+};
+
 #endif // API_COMMANDS_H
