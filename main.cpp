@@ -1,10 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include "webapicontroller.h"
-#include "systemmanager.h"
-#include "filesystemmanager.h"
-#include "guicontroller.h"
+#include "api_controller.h"
+#include "system_manager.h"
+#include "filesystem_manager.h"
+#include "gui_controller.h"
 #include "logger.h"
 #include "QDebug"
 #include "QQmlContext"
@@ -21,35 +21,37 @@ int main(int argc, char *argv[])
 
     const QString defaultRootDir = "/home/anastasia/tp/cpp/mydir";
 
-    WebApiController webApiController;
+    ApiController ApiController;
     SystemManager systemController;
     FileSystemManager fileSystemController(defaultRootDir);
 
     // connection GUI controller signals to slots
     QObject::connect(&guiController, &GuiController::portChanged,
-                        &webApiController, &WebApiController::onPortChangedRestart);
+                        &ApiController, &ApiController::onPortChangedRestart);
     QObject::connect(&guiController, &GuiController::rootDirPathChanged,
                         &fileSystemController, &FileSystemManager::onRootDirChanged);
     // connection logger signals to slots
     QObject::connect(Logger::Instance(), &Logger::newLogMsg,
                         &guiController, &GuiController::onNewLogMsg);
+    QObject::connect(Logger::Instance(), &Logger::newErrorLogMsg,
+                        &guiController, &GuiController::onNewErrorLogMsg);
     // connecting web controller signals to slots
-    QObject::connect(&webApiController, &WebApiController::volumeSetValue,
+    QObject::connect(&ApiController, &ApiController::volumeSetValue,
                          &systemController, &SystemManager::setVolumeValue);
-    QObject::connect(&webApiController, &WebApiController::volumeTurnValue,
+    QObject::connect(&ApiController, &ApiController::volumeTurnValue,
                          &systemController, &SystemManager::turnVolumeValue);
-    QObject::connect(&webApiController, &WebApiController::volumeSetIsMute,
+    QObject::connect(&ApiController, &ApiController::volumeSetIsMute,
                          &systemController, &SystemManager::setVolumeIsMute);
     // connectiong web api signals to slots
-    QObject::connect(&webApiController, &WebApiController::fsGetFilesList,
+    QObject::connect(&ApiController, &ApiController::fsGetFilesList,
                         &fileSystemController, &FileSystemManager::getFilesList);
-    QObject::connect(&webApiController, &WebApiController::fsCopyFiles,
+    QObject::connect(&ApiController, &ApiController::fsCopyFiles,
                         &fileSystemController, &FileSystemManager::copyFiles);
 
-    guiController.updateServerPortField(webApiController.getCurrentPort());
+    guiController.updateServerPortField(ApiController.getCurrentPort());
     guiController.updateRootDirPathField(defaultRootDir);
 
-    webApiController.startListen();
+    ApiController.startListen();
 
     const int retVal = app.exec();
 

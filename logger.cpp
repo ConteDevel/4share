@@ -48,9 +48,14 @@ bool Logger::setMinLogLevel(Logger::LogLevel minLogLevel)
 
 void Logger::logMsg(QString msg, Logger::LogLevel logLevel)
 {
-    msg = "[ " + getLogLevelString(logLevel) + " - " +
-            QDateTime::currentDateTime().toString() + " ]: " + msg;
-    emit newLogMsg(msg);
+    QString logMsg = "[ " + QDateTime::currentDateTime().toString("dd-MM-yyyy hh:mm:ss") + " - "
+             + getLogLevelString(logLevel) + " ]: " + msg;
+    if (logLevel == LogLevel::ERROR) {
+        emit newErrorLogMsg(logMsg, msg);
+    }
+    else {
+        emit newLogMsg(logMsg);
+    }
     // TODO: log in file
 }
 

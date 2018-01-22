@@ -25,7 +25,8 @@ public:
     void logMsg(QString msg, LogLevel logLevel = INFO);
 
 signals:
-    void newLogMsg(QString msg);
+    void newLogMsg(QString logMsg);
+    void newErrorLogMsg(QString logMsg, QString errorMsg);
 
 private:
     QString getLogLevelString(LogLevel logLevel);

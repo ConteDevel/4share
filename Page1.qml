@@ -3,8 +3,15 @@ import QtQuick.Dialogs 1.2
 
 Page1Form {
     buttonChangePort.onClicked: {
-        console.log("Button Change Port Pressed. Entered port: " + textFieldPort.text);
-        signalServerPortChanged(textFieldPort.text);
+        var port = textFieldPort.text;
+        console.log("Button Change Port Pressed. Entered port: " + port);
+        if (port > 1023 && port <= 65535 ) {
+            signalServerPortChanged(textFieldPort.text);
+        }
+        else {
+            messageDialogError.setText("Введено некорректное значение порта!")
+            messageDialogError.open();
+        }
     }
 
     buttonChoosePath.onClicked: {

@@ -1,4 +1,4 @@
-#include "guicontroller.h"
+#include "gui_controller.h"
 
 #include <QDebug>
 #include <QQmlContext>
@@ -32,6 +32,19 @@ void GuiController::updateLogListModel()
     engine_.rootContext()->setContextProperty("listModel", QVariant::fromValue(logListModel_));
 }
 
+void GuiController::displayErrorMsg(QString errorMsg)
+{
+    QObject* messageDialog = rootAppWindow_->findChild<QObject*>("obj_mderror");
+    if(!messageDialog)
+    {
+        qDebug() << "Failed to find textfieldPort object!";
+        return;
+    }
+    QVariant msg(errorMsg);
+    QMetaObject::invokeMethod(messageDialog, "displayErrorDialog",
+            Q_ARG(QVariant, msg));
+}
+
 void GuiController::onServerPortChanged(const QString &newPort)
 {
     qDebug() << "New server port from gui: " << newPort;
@@ -50,11 +63,18 @@ void GuiController::onRootDirPathChanged(const QString &newPath)
     emit rootDirPathChanged(newPath);
 }
 
-void GuiController::onNewLogMsg(QString msg)
+void GuiController::onNewLogMsg(QString logMsg)
 {
-    qDebug() << "New log msg: " << msg;
-    logListModel_.insert(0, msg);
-    //logListModel_.append(msg);
+    qDebug() << "New log msg: " << logMsg;
+    logListModel_.insert(0, logMsg);
+    updateLogListModel();
+}
+
+void GuiController::onNewErrorLogMsg(QString logMsg, QString errorMsg)
+{
+    qDebug() << "New error log msg: " << logMsg;
+    logListModel_.insert(0, logMsg);
+    displayErrorMsg(errorMsg);
     updateLogListModel();
 }
 
