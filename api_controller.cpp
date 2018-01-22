@@ -26,11 +26,11 @@ bool ApiController::startListen()
     // start server listenning (using listen QTcpServer method)
     bool couldStartListen =  httpServer_->listen(QHostAddress::Any, httpServerPort_);
     if (couldStartListen) {
-        Logger::Instance()->logMsg("HTTP сервер запущен на порту: "
+        Logger::Instance()->logMsg("HTTP сервер запущен на порте: "
                                         + QString::number(httpServerPort_));
     }
     else {
-        Logger::Instance()->logMsg("Не удалось запустить сервер на порту: "
+        Logger::Instance()->logMsg("Не удалось запустить сервер на порте: "
                                    + QString::number(httpServerPort_),
                                    Logger::LogLevel::ERROR);
     }
